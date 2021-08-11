@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QMessageBox>
+#include <QPixmap>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
       m_proc(this)
 {
     ui->setupUi(this);
+
 
     // スロット設定
         connect(&m_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(ProcOutput()));
@@ -63,5 +65,12 @@ void MainWindow::ProcFinished(int exitCode, QProcess::ExitStatus exitStatus)
 void MainWindow::on_pushButton_clicked()
 {
     ui->textBrowser->setText(QString::fromLocal8Bit("test"));
+
+    //表示する画像のアドレスをsに代入
+    QString s="C:/Procon32_Simulator/puzzle_image/puzzle.jpg";
+    //Qpixmapのaにいれる
+    QPixmap a(s);
+    //labelに表示
+    ui->label->setPixmap(a);
 }
 
