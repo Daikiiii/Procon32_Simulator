@@ -70,7 +70,10 @@ void MainWindow::on_pushButton_clicked()
     QString s="C:/Procon32_Simulator/puzzle_image/puzzle.jpg";
     //Qpixmapのaにいれる
     QPixmap a(s);
+    //縦横調整
+    int w = ui->label->width();
+    int h = ui->label->height();
     //labelに表示
-    ui->label->setPixmap(a);
+    ui->label->setPixmap(a.scaled(w,h,Qt::KeepAspectRatio));
 }
 

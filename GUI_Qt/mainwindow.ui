@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1295</width>
-    <height>667</height>
+    <width>909</width>
+    <height>486</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>make puzle</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser">
@@ -42,8 +42,8 @@
      <rect>
       <x>391</x>
       <y>60</y>
-      <width>871</width>
-      <height>541</height>
+      <width>471</width>
+      <height>351</height>
      </rect>
     </property>
     <property name="text">
@@ -56,7 +56,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1295</width>
+     <width>909</width>
      <height>26</height>
     </rect>
    </property>
