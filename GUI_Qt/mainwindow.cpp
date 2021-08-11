@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(&m_proc, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(ProcFinished(int,QProcess::ExitStatus)));
 
         // pythonを別プロセスで実行
-        QString pythonCodePath = "C:/Procon32_Simulator/test01.py";	// 注：自分の環境に合わせて書き換える
+        QString pythonCodePath = "C:/Procon32_Simulator/create_puzzle";	// 注：自分の環境に合わせて書き換える
         QStringList args;
         args << pythonCodePath;
         m_proc.start("python", args);
