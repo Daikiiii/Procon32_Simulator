@@ -66,6 +66,13 @@ void MainWindow::on_pushButton_clicked()
 {
     ui->textBrowser->setText(QString::fromLocal8Bit("test"));
 
+        // pythonを別プロセスで実行
+        QString pythonCodePath = "C:/Procon32_Simulator/create_puzzle";	// 注：自分の環境に合わせて書き換える
+        QStringList args;
+        args << pythonCodePath;
+        m_proc.start("python", args);
+
+
     //表示する画像のアドレスをsに代入
     QString s="C:/Procon32_Simulator/puzzle_image/puzzle.jpg";
     //Qpixmapのaにいれる
