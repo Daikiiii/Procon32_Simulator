@@ -22,6 +22,8 @@ private slots:
     void ProcError();
     void ProcFinished(int, QProcess::ExitStatus);
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     QProcess		m_proc;

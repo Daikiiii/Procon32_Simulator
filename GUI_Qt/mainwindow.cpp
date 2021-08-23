@@ -84,3 +84,9 @@ void MainWindow::on_pushButton_clicked()
     ui->label->setPixmap(a.scaled(w,h,Qt::KeepAspectRatio));
 }
 
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ui->textBrowser->setText(QString::fromLocal8Bit("test message"));
+}
+
