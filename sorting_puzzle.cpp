@@ -199,7 +199,6 @@ int main() {
     for (i = 0; i < width * height; i++) {
         val+=problem.piece_val(i, board.at(i));
     }
-    cout << val << endl;
     int cost = s_rate;
     int limit = s_rate + val / 2;
     int n_select;
