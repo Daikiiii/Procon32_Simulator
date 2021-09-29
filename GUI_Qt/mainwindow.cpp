@@ -1,9 +1,12 @@
+#include <iostream>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPixmap>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -82,6 +85,7 @@ void MainWindow::on_pushButton_clicked()
     int h = ui->label->height();
     //labelに表示
     ui->label->setPixmap(a.scaled(w,h,Qt::KeepAspectRatio));
+    cout<<"pusshedbutton"<<endl;
 }
 
 
@@ -104,7 +108,18 @@ void MainWindow::on_pushButton_4_clicked()
 {
 
     // pythonを別プロセスで実行
-    QString pythonCodePath = "C:/Procon32_Simulator/puzzle_solver/puzzle_solver.py";	// 注：自分の環境に合わせて書き換える
+    QString pythonCodePath = "C:/Procon32_Simulator/procon32_download.py";	// 注：自分の環境に合わせて書き換える
+    QStringList args;
+    args << pythonCodePath;
+    m_proc.start("python", args);
+}
+
+
+void MainWindow::on_pushButton_5_clicked()
+{
+
+    // pythonを別プロセスで実行
+    QString pythonCodePath = "C:/Procon32_Simulator/procon32_submit.py";	// 注：自分の環境に合わせて書き換える
     QStringList args;
     args << pythonCodePath;
     m_proc.start("python", args);

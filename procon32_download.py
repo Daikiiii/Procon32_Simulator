@@ -3,7 +3,7 @@ import requests
 #予行演習用サーバ
 #URL="https://procon32-pre.kosen.work"
 URL = "https://procon32-practice.kosen.work"
-File_Path="D:/Python_Script/"
+File_Path="C:/Procon32_Simulator/"
 
 '''
 proconサーバから問題を取得します

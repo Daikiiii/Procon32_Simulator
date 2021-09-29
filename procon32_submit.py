@@ -4,7 +4,7 @@ import requests
 URL = "https://procon32-practice.kosen.work"
 
 #適当に設定したパスなのであまり気にしないでください
-File_Path="D:/Python_Script/puzzle_text/puzzle_solution.txt"
+File_Path="C:/Procon32_Simulator/puzzle_solver/puzzle_text/puzzle_solution.txt"
 
 #--token=b604db66dd97b24ee2a6895034893add998a995a2fd3f52fb0ae1a213dee8fa1
 def submit(url,file_path):

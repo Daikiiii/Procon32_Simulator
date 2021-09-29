@@ -31,6 +31,7 @@ public:
     QPushButton *pushButton_2;
     QPushButton *pushButton_3;
     QPushButton *pushButton_4;
+    QPushButton *pushButton_5;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -58,7 +59,10 @@ public:
         pushButton_3->setGeometry(QRect(10, 90, 161, 28));
         pushButton_4 = new QPushButton(centralwidget);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setGeometry(QRect(180, 30, 93, 81));
+        pushButton_4->setGeometry(QRect(180, 30, 93, 31));
+        pushButton_5 = new QPushButton(centralwidget);
+        pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
+        pushButton_5->setGeometry(QRect(180, 70, 93, 28));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -76,11 +80,12 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        pushButton->setText(QCoreApplication::translate("MainWindow", "make puzle", nullptr));
+        pushButton->setText(QCoreApplication::translate("MainWindow", "make puzzle", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
         pushButton_2->setText(QCoreApplication::translate("MainWindow", "reconstruction puzzle", nullptr));
         pushButton_3->setText(QCoreApplication::translate("MainWindow", "sort puzzle", nullptr));
-        pushButton_4->setText(QCoreApplication::translate("MainWindow", "get_ploblem", nullptr));
+        pushButton_4->setText(QCoreApplication::translate("MainWindow", "download", nullptr));
+        pushButton_5->setText(QCoreApplication::translate("MainWindow", "submit", nullptr));
     } // retranslateUi
 
 };
