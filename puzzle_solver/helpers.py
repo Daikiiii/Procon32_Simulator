@@ -1,5 +1,6 @@
 import numpy as np
 import codecs
+from PIL import Image
 
 def make_solution(save_path,Place_mat,Rotmat,puzzle_inf):
     width,height=puzzle_inf[:2]
@@ -14,7 +15,7 @@ def make_solution(save_path,Place_mat,Rotmat,puzzle_inf):
             rot_mat[i,j]=Rotmat[i,j]
     #print(solution)
     #print(rot_mat)
-    text_file=open(save_path+"/puzzle_solution.txt","wt")
+    text_file=open(save_path+"puzzle_solution.txt","wt")
     text_file.write(str(width)+" "+str(height)+"\n")
     text_file.write(str(puzzle_inf[2])+"\n")
     text_file.write(str(puzzle_inf[3])+" "+str(puzzle_inf[4])+"\n")
@@ -54,3 +55,7 @@ def take_problem_inf(problem_path):
         #print(select_rate,change_rate)
         f.close()
     return [int(width),int(height),int(select_count),int(select_rate),int(change_rate)]
+def problem_ppm_png(input_path,output_path):
+    im=Image.open(input_path)
+    im.show()
+    im.save(output_path)
