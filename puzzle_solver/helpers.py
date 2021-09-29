@@ -4,14 +4,14 @@ from PIL import Image
 
 def make_solution(save_path,Place_mat,Rotmat,puzzle_inf):
     width,height=puzzle_inf[:2]
-    solution=[str(format(i,'x'))+str(format(j,'x')) for i in range(height)  for j in range(width)]
+    solution=[str(format(j,'x'))+str(format(i,'x')) for i in range(height)  for j in range(width)]
     solution=np.reshape(solution,(height,width))
     rot_mat=np.zeros((height,width),dtype=np.int32)
     for i in range(height):
         for j in range(width):
             piece1=Place_mat[i,j]//width
             piece2=Place_mat[i,j]%width
-            solution[i,j]=str(format(piece1,'x'))+str(format(piece2,'x'))
+            solution[i,j]=str(format(piece2,'x'))+str(format(piece1,'x'))
             rot_mat[i,j]=Rotmat[i,j]
     #print(solution)
     #print(rot_mat)

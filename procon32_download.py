@@ -23,6 +23,7 @@ def download(url,File_Path):
                 o.write(r.content)
                 print(File_Path,"に","problem.ppmを保存しました",)
                 return
+            print(r.status_code,r.text.strip())
 
 if __name__ == "__main__":
     #ppmの保存先

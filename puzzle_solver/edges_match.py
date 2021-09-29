@@ -254,11 +254,11 @@ def __initial_positions(pieces,pieces_count,width,height,edges):
 
         puzzle_cluster[tree_i]=shift_cluster_i(puzzle_cluster_position[tree_i],puzzle_cluster[tree_i],offset_j,trees[tree_i])
         
-        
+        '''
         rotation_place = __place_pieces(puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],height,width)
         solution=__paste_pieces(pieces,puzzle_cluster[tree_i],rotation_place,width,height)
         solution.show()
-        
+        '''
     rotation_place = __place_pieces(puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],height,width)
     solution=__paste_pieces(pieces,puzzle_cluster[tree_i],rotation_place,width,height)
     solution.show()
