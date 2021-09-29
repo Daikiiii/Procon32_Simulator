@@ -88,5 +88,25 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_2_clicked()
 {
     ui->textBrowser->setText(QString::fromLocal8Bit("test message"));
+
+
+    // pythonを別プロセスで実行
+    QString pythonCodePath = "C:/Procon32_Simulator/puzzle_solver/puzzle_solver.py";	// 注：自分の環境に合わせて書き換える
+    QStringList args;
+    args << pythonCodePath;
+    m_proc.start("python", args);
+
+    ui->textBrowser->setText(QString::fromLocal8Bit("fin"));
+}
+
+
+void MainWindow::on_pushButton_4_clicked()
+{
+
+    // pythonを別プロセスで実行
+    QString pythonCodePath = "C:/Procon32_Simulator/puzzle_solver/puzzle_solver.py";	// 注：自分の環境に合わせて書き換える
+    QStringList args;
+    args << pythonCodePath;
+    m_proc.start("python", args);
 }
 
