@@ -59,3 +59,13 @@ def problem_ppm_png(input_path,output_path):
     im=Image.open(input_path)
     im.show()
     im.save(output_path)
+def make_dummy(save_path,rot_mat,puzzle_inf):
+    text_file=open(save_path+"solution.txt","wt")
+    width,height=puzzle_inf[:2]
+    for i in range(height):
+        for j in range(width):
+            text_file.write(str(rot_mat[i,j]))
+    text_file.write("\n")
+    text_file.write('0')
+    print("疑似解答保存")
+    text_file.close()
