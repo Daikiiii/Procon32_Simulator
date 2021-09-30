@@ -2,6 +2,7 @@
 #include<algorithm>
 #include<vector>
 #include<queue>
+#include<time.h>
 
 using namespace std;
 
@@ -104,9 +105,9 @@ struct IDA {
                     break;
                 }
                 c_rec.pop();
-                cout << endl;
             }
             c_count.pop();
+            cout << endl;
         }
     }
     int piece_val(int np,int cp) {  //np->現在位置cp->正解位置
@@ -130,6 +131,7 @@ struct IDA {
 int gcd(int a, int b);
 
 int main() {
+    clock_t start = clock();
     int width, height;
     int selectable;
     int s_rate, c_rate; //s_rateは選択コスト,c_rateは交換コスト
@@ -206,7 +208,7 @@ int main() {
 
     int rate_gcd = gcd(s_rate, c_rate);
 
-    while (gCount==0&&limit<200) {
+    while (gCount==0) {
         for (i = 0; i < width * height; i++) {
             if (problem.piece_val(i,board.at(i)) != 0) {
                 n_select = i;
@@ -216,8 +218,10 @@ int main() {
             }
             board = board_copy;
         }
-        limit += rate_gcd;
+        limit += 2;
     }
+    clock_t end = clock();
+    cout << "time=" << ((double)end - start)/1000 << endl;
     return 0;
 }
 
