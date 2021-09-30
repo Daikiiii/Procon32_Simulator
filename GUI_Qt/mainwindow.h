@@ -4,6 +4,7 @@
 #include <QProcess>
 #include <QMainWindow>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -27,6 +28,11 @@ private slots:
     void on_pushButton_4_clicked();
 
     void on_pushButton_5_clicked();
+
+    void on_pushButton_3_clicked();
+
+
+    void on_lineEdit_returnPressed();
 
 private:
     Ui::MainWindow *ui;

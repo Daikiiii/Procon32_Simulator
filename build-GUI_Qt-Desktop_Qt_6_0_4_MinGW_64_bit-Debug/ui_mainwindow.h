@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -32,6 +33,7 @@ public:
     QPushButton *pushButton_3;
     QPushButton *pushButton_4;
     QPushButton *pushButton_5;
+    QLineEdit *lineEdit;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -39,34 +41,37 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(774, 424);
+        MainWindow->resize(1236, 441);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(10, 10, 161, 28));
+        pushButton->setGeometry(QRect(10, 10, 131, 28));
         textBrowser = new QTextBrowser(centralwidget);
         textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
-        textBrowser->setGeometry(QRect(10, 130, 256, 192));
+        textBrowser->setGeometry(QRect(10, 130, 256, 241));
         label = new QLabel(centralwidget);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(280, 10, 471, 351));
+        label->setGeometry(QRect(610, 10, 471, 351));
         pushButton_2 = new QPushButton(centralwidget);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(10, 50, 161, 28));
+        pushButton_2->setGeometry(QRect(10, 50, 131, 28));
         pushButton_3 = new QPushButton(centralwidget);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setGeometry(QRect(10, 90, 161, 28));
+        pushButton_3->setGeometry(QRect(10, 90, 131, 28));
         pushButton_4 = new QPushButton(centralwidget);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setGeometry(QRect(180, 30, 93, 31));
+        pushButton_4->setGeometry(QRect(162, 30, 111, 31));
         pushButton_5 = new QPushButton(centralwidget);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        pushButton_5->setGeometry(QRect(180, 70, 93, 28));
+        pushButton_5->setGeometry(QRect(162, 70, 111, 28));
+        lineEdit = new QLineEdit(centralwidget);
+        lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
+        lineEdit->setGeometry(QRect(300, 80, 201, 221));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 774, 26));
+        menubar->setGeometry(QRect(0, 0, 1236, 26));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
