@@ -1,8 +1,8 @@
 import urllib.parse
 import requests
 #予行演習用サーバ
-#URL="https://procon32-pre.kosen.work"
-URL = "https://procon32-practice.kosen.work"
+URL="https://procon32-pre.kosen.work"
+#URL = "https://procon32-practice.kosen.work"
 File_Path="C:/Procon32_Simulator/puzzle_solver/puzzle/"
 
 '''

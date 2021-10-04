@@ -11,7 +11,7 @@ assembled_width,assembled_height=puzzle_inf[:2]
 pieces_count=assembled_height*assembled_width
 pieces_range=range(pieces_count)
 relations=range(16)
-suffle_key=1
+suffle_key=0
 npieces=puzzle_generater(img_path,assembled_height,assembled_width,suffle_key)
 
 start=time.time()
