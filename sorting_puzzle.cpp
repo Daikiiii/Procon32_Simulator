@@ -7,25 +7,27 @@
 using namespace std;
 
 int gCount = 0;
+unsigned int val_min = 1000000;
 
 struct IDA {
-    int width; //横
-    int height;  //縦
-    int s_rate, c_rate;
+    short width;
+    short height;  //縦
+    unsigned int s_rate, c_rate;
     vector<vector<int>> relate; //それぞれの座標に対する隣接リスト
-    void id_search(vector<int> board,queue<int>moved,int limit, int cost, int selectable,int n_select, int val,int recent) {    //n_selectは現在選択しているピースの座標
+    void id_search(vector<int> board,queue<int>moved,unsigned int limit,unsigned int cost,unsigned int selectable,short n_select,unsigned int val,short recent) {    //n_selectは現在選択しているピースの座標
         int n_val,n_cost;
         int c;  //交換対象の座標
         int i;
-        if (cost <= limit&&val==0) {
+        int bagutta = 0;
+        if (gCount != 0|| val +cost > limit) {
+            val_min = min(val_min, val);
+        }
+        else if (cost <= limit&&val==0) {
             
                 gCount++;
                 id_finished(moved);
-                cout <<"cost="<< cost << endl;
+                //cout <<"cost="<< cost << endl;
             
-        }
-        else if (cost >= limit) {
-
         }
         else {
             queue<int>n_moved;
@@ -34,28 +36,28 @@ struct IDA {
             現在選択している座標のピースが正解位置ではない
             のいずれかを満たすならなら交換操作を行う*/
             if (recent >= 1000 || selectable == 0||n_select!=board.at(n_select)) {
+                n_cost = cost + c_rate;
                 for (i = 0; i < 4; i++) {
                     if (abs(i-recent) == 2||relate.at(n_select).at(i)==-1) continue;
                     n_moved = moved;
                     c = relate.at(n_select).at(i);
+                    if (c < 0) bagutta = n_select;
                     n_val = val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
                     //printf("%d %d %d %d %d %d\n", c, board.at(c), n_select, board.at(n_select), val, n_val);
-                    n_cost = cost + c_rate;
                     swap(board.at(n_select), board.at(c));
                     n_moved.push(i);
-                    if (n_val + n_cost <= limit)
-                        id_search(board,n_moved, limit, n_cost,selectable, c, n_val,i);
+                    id_search(board,n_moved, limit, n_cost,selectable, c, n_val,i);
                     swap(board.at(n_select), board.at(c));  //元に戻す
                 }
             }
             else {
+                n_cost = cost + s_rate;
                 for (i = 0; i < width * height;i++) {
                     if (i == board.at(i)) continue;
                     n_moved = moved;
                     n_moved.push(i + 1000);
-                    n_cost = cost + s_rate;
-                    if (val + n_cost <= limit)
-                        id_search(board,n_moved, limit, n_cost,selectable-1, i, val,i+1000);
+                    
+                    id_search(board,n_moved, limit, n_cost,selectable-1, i, val,i+1000);
                 }
             }
         }
@@ -201,12 +203,15 @@ int main() {
     for (i = 0; i < width * height; i++) {
         val+=problem.piece_val(i, board.at(i));
     }
+    //cout <<"val="<< val << endl;
     int cost = s_rate;
-    int limit = s_rate + val / 2;
+    int limit = s_rate + (int)(val / 2);
+    //cout <<"limit="<< limit << endl;
     int n_select;
     queue<int> moved;//駒の操作を管理するqueue
 
     int rate_gcd = gcd(s_rate, c_rate);
+    int roop = 0;
 
     while (gCount==0) {
         for (i = 0; i < width * height; i++) {
@@ -218,10 +223,18 @@ int main() {
             }
             board = board_copy;
         }
-        limit += 2;
+        //cout <<"val_min="<< val_min << endl;
+        if (val_min > rate_gcd)
+            limit += (int)(val_min / 2);
+        else
+            limit += rate_gcd;
+        //cout <<"limit="<< limit << endl;
+        val_min = 1000000;
+        roop++;
+        if (roop >1) break;
     }
     clock_t end = clock();
-    cout << "time=" << ((double)end - start)/1000 << endl;
+    //cout << "time=" << ((double)end - start)/1000 << endl;
     return 0;
 }
 
