@@ -40,8 +40,8 @@ struct Beam {
     vector<vector<int>> relate; //それぞれの座標に対する隣接リスト
     int be_wid;
 
-    set predata[100];
-    set nextdata[100];
+    set predata[10];
+    set nextdata[10];
 
 
 
@@ -190,7 +190,7 @@ struct Beam {
 int gcd(int a, int b);
 
 int main() {
-    clock_t start = clock();
+    //clock_t start = clock();
     int width, height;
     int selectable;
     int s_rate, c_rate; //s_rateは選択コスト,c_rateは交換コスト
@@ -284,21 +284,26 @@ int main() {
     */
 
     problem.predata[0].board = board;
+    problem.predata[0].cost = 0;
+    problem.predata[0].val = val;
+    problem.predata[0].selectable = selectable;
+    problem.predata[0].n_select = -1;
+    problem.predata[0].recent = -1;
+    
 
     problem.be_search(board, moved, cost, selectable, -1, -1,val,0);
-        //(vector<int> board, queue<int>moved, int cost, int selectable, int n_select, int recent,int pre_root)
 
 
 
     int node_count;
-    bool depth = false;
+    int depth = 0;
 
     while (gCount == 0) {
         int dir, sel,root,c;
         node_count = 0;
         for (auto itr = node.begin(); itr != node.end(); ++itr) {
             root = itr->second.second;  //  遷移元の指定
-            if (itr->second.first >= 1000||depth==false) {
+            if (itr->second.first >= 1000||depth==0) {
                 dir = itr->second.first % 1000;
                 sel = itr->second.first;
                 
@@ -308,13 +313,13 @@ int main() {
 
                 
                 c = relate.at(sel).at(dir);
-                problem.nextdata[root].moved= moved;
+                problem.nextdata[root].moved= problem.predata[root].moved;
                 problem.nextdata[root].moved.push(sel + 1000);
                 problem.nextdata[root].moved.push(dir);
                 swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
                 problem.nextdata[root].board = board;
 
-                problem.nextdata[root].cost = cost + s_rate + c_rate;
+                problem.nextdata[root].cost = problem.predata[root].cost + s_rate + c_rate;
                 problem.nextdata[root].val = itr->first;
                 problem.nextdata[root].selectable = selectable - 1;
                 problem.nextdata[root].n_select = sel;
@@ -332,14 +337,14 @@ int main() {
                 swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
                 problem.nextdata[root].board = board;
 
-                problem.nextdata[root].cost = cost + c_rate;
+                problem.nextdata[root].cost = problem.predata[root].cost + c_rate;
                 problem.nextdata[root].val = itr->first;
                 problem.nextdata[root].selectable = selectable;
                 problem.nextdata[root].n_select = sel;
                 problem.nextdata[root].recent = dir;
             }
         }
-        depth = true;
+        depth++;
 
         for (i = 0; i < node_count; i++) {
             problem.predata[i] = problem.nextdata[i];
@@ -349,8 +354,8 @@ int main() {
             problem.be_search(problem.predata[i].board, problem.predata[i].moved, problem.predata[i].cost, problem.predata[i].selectable, problem.predata[i].n_select, problem.predata[i].recent, problem.predata[i].val,root);
         }
     }
-    clock_t end = clock();
-    cout << "time=" << ((double)end - start) / 1000 << endl;
+    //clock_t end = clock();
+    //cout << "time=" << ((double)end - start) / 1000 << endl;
     return 0;
 }
 
