@@ -46,6 +46,8 @@ struct Beam {
 
 
     void be_search(vector<int> board, queue<int>moved, int cost, int selectable, int n_select, int recent,int n_val,int pre_root) {    //n_selectは現在選択しているピースの座標
+        
+        int valu;
         int c;  //交換対象の座標
         int i,j;
 
@@ -61,14 +63,16 @@ struct Beam {
             /*もし直前の操作が選択ではなく、
             残り選択可能回数が0ではない
             なら選択操作を行う*/
-            if (recent < 1000 && selectable != 0) {
+            if (selectable != 0) {
                 for (i = 0; i < width * height; i++) {
-                    if (i == board.at(i)||i==n_select) continue;
-                    for (j = 0; j < 4; j++) {
-                        if (relate.at(i).at(j) == -1) continue;
-                        c = relate.at(i).at(j);
-                        n_val = n_val - (piece_val(c, board.at(c)) + piece_val(i, board.at(i))) + (piece_val(c, board.at(i)) + piece_val(i, board.at(c)));
-                        node.emplace(n_val,make_pair( (i + 1) * 1000 + j,pre_root));
+                    if (i != board.at(i) && i != n_select) {
+                        for (j = 0; j < 4; j++) {
+                            if (relate.at(i).at(j) != -1) {
+                                c = relate.at(i).at(j);
+                                valu = n_val - (piece_val(c, board.at(c)) + piece_val(i, board.at(i))) + (piece_val(c, board.at(i)) + piece_val(i, board.at(c)));
+                                node.emplace(valu, make_pair((i + 1) * 1000 + j, pre_root));
+                            }
+                        }
                     }
                 }
             }
@@ -76,46 +80,10 @@ struct Beam {
                 for (i = 0; i < 4; i++) {
                     if (abs(i - recent) == 2 || relate.at(n_select).at(i) == -1) continue;
                     c = relate.at(n_select).at(i);
-                    n_val = n_val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
-                    node.emplace(n_val, make_pair(i, pre_root));
+                    valu = n_val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
+                    node.emplace(valu, make_pair(i, pre_root));
                 }
             }
-            /*for (auto itr = node.begin(); itr != node.end(); ++itr) {
-                if (itr->second.first >= 1000) {
-                    dir = itr->second.first % 1000;
-                    sel = itr->second.first;
-                    sel -= dir;
-                    sel = (sel / 1000) - 1;
-                    n_cost = cost + s_rate + c_rate;
-                    c = relate.at(sel).at(dir);
-                    n_moved = moved;
-                    n_moved.push(sel + 1000);
-                    n_moved.push(dir);
-                    swap(board.at(sel), board.at(c));
-                    //be_search(board, n_moved,n_cost, selectable-1, c, n_val, dir);
-                }
-            }*/
-
-            /*if (recent >= 1000 || selectable == 0 || n_select != board.at(n_select)) {
-                n_cost = cost + c_rate;
-                for (i = 0; i < 4; i++) {
-
-                    if (abs(i - recent) == 2 || relate.at(n_select).at(i) == -1) continue;
-                    c = relate.at(n_select).at(i);
-                    n_val = val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
-                    node.emplace(n_val, i);
-                    n_moved = moved;
-                    swap(board.at(n_select), board.at(c));
-                    n_moved.push(i);
-                    if (n_val + n_cost <= limit)
-                        be_search(board, n_moved, limit, n_cost, selectable, c, n_val, i);
-                    swap(board.at(n_select), board.at(c));  //元に戻す
-                }
-            }
-            
-
-                }
-            }*/
         }
     }
     void be_finished(queue<int> moved) {    //探索成功時の最終処理
@@ -187,8 +155,6 @@ struct Beam {
     }
 };
 
-int gcd(int a, int b);
-
 int main() {
     //clock_t start = clock();
     int width, height;
@@ -207,9 +173,6 @@ int main() {
         board.at(i) = (int)(board.at(i) / 16) + (board.at(i) % 16) * width;
     }
 
-    /*vector<int> board_copy(width * height);
-    board_copy = board;
-    */
     vector<vector<int>> relate(width * height, vector<int>(4));
 
     //relateの書き込み
@@ -267,22 +230,6 @@ int main() {
     int cost = 0;
     queue<int> moved;//駒の操作を管理するqueue
 
-    int rate_gcd = gcd(s_rate, c_rate);
-
-
-    /*while (gCount == 0) {
-        for (i = 0; i < width * height; i++) {
-            if (problem.piece_val(i, board.at(i)) != 0) {
-                n_select = i;
-                moved.push(i + 1000);
-                problem.be_search(board, moved, cost, selectable, n_select, val, i + 1000);
-                while (moved.empty() == false) moved.pop();
-            }
-            board = board_copy;
-        }
-    }
-    */
-
     problem.predata[0].board = board;
     problem.predata[0].cost = 0;
     problem.predata[0].val = val;
@@ -303,7 +250,7 @@ int main() {
         node_count = 0;
         for (auto itr = node.begin(); itr != node.end(); ++itr) {
             root = itr->second.second;  //  遷移元の指定
-            if (itr->second.first >= 1000||depth==0) {
+            if (itr->second.first >= 1000||depth==0) {      //選択+交換操作
                 dir = itr->second.first % 1000;
                 sel = itr->second.first;
                 
@@ -313,36 +260,38 @@ int main() {
 
                 
                 c = relate.at(sel).at(dir);
-                problem.nextdata[root].moved= problem.predata[root].moved;
-                problem.nextdata[root].moved.push(sel + 1000);
-                problem.nextdata[root].moved.push(dir);
+                problem.nextdata[node_count].moved= problem.predata[root].moved;
+                problem.nextdata[node_count].moved.push(sel + 1000);
+                problem.nextdata[node_count].moved.push(dir);
                 swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
-                problem.nextdata[root].board = board;
+                problem.nextdata[node_count].board = problem.predata[root].board;
+                swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
 
-                problem.nextdata[root].cost = problem.predata[root].cost + s_rate + c_rate;
-                problem.nextdata[root].val = itr->first;
-                problem.nextdata[root].selectable = selectable - 1;
-                problem.nextdata[root].n_select = sel;
-                problem.nextdata[root].recent = 1000;
-                node_count++;
-                if (node_count >= be_wid) break;
+                problem.nextdata[node_count].cost = problem.predata[root].cost + s_rate + c_rate;
+                problem.nextdata[node_count].val = itr->first;
+                problem.nextdata[node_count].selectable = problem.predata[root].selectable - 1;
+                problem.nextdata[node_count].n_select = sel;
+                problem.nextdata[node_count].recent =dir;
             }
-            else {
+            else {                                          //交換操作
                 dir = itr->second.first;
                 sel = problem.predata[root].n_select;
 
                 c = relate.at(sel).at(dir);   
-                problem.nextdata[root].moved = moved;
-                problem.nextdata[root].moved.push(dir);
+                problem.nextdata[node_count].moved = problem.predata[root].moved;
+                problem.nextdata[node_count].moved.push(dir);
                 swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
-                problem.nextdata[root].board = board;
+                problem.nextdata[node_count].board = problem.predata[root].board;
+                swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));   //戻す
 
-                problem.nextdata[root].cost = problem.predata[root].cost + c_rate;
-                problem.nextdata[root].val = itr->first;
-                problem.nextdata[root].selectable = selectable;
-                problem.nextdata[root].n_select = sel;
-                problem.nextdata[root].recent = dir;
+                problem.nextdata[node_count].cost = problem.predata[root].cost + c_rate;
+                problem.nextdata[node_count].val = itr->first;
+                problem.nextdata[node_count].selectable = problem.predata[root].selectable;
+                problem.nextdata[node_count].n_select = sel;
+                problem.nextdata[node_count].recent = dir;
             }
+            node_count++;
+            if (node_count >= be_wid) break;
         }
         depth++;
 
@@ -357,16 +306,4 @@ int main() {
     //clock_t end = clock();
     //cout << "time=" << ((double)end - start) / 1000 << endl;
     return 0;
-}
-
-int gcd(int a, int b)
-{
-    if (a % b == 0)
-    {
-        return(b);
-    }
-    else
-    {
-        return(gcd(b, a % b));
-    }
 }
