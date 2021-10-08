@@ -5,11 +5,14 @@
 #include<map>
 #include<time.h>
 
+#include<cassert>
+
+
 using namespace std;
 
 int gCount = 0;
 multimap<int, pair<int,int>> node;
-#define be_size 5
+#define be_size 10
 
 class set {
 public:
@@ -22,15 +25,30 @@ public:
     int recent;
 
     set& operator =(const set& temp) {
-        moved = temp.moved;
-        board = temp.board;
-        cost = temp.cost;
-        val = temp.val;
-        selectable = temp.selectable;
-        n_select = temp.n_select;
-        recent = temp.recent;
-        return *this;
+        try {
+            moved = temp.moved;
+            board = temp.board;
+            cost = temp.cost;
+            val = temp.val;
+            selectable = temp.selectable;
+            n_select = temp.n_select;
+            recent = temp.recent;
+            return *this;
+        }
+        catch (...) {
+            //assert(false);
+        }
     }
+    /*
+    set(vector<int> board1,int cost1,int val1,int selectable1,int n_select1,int recent1){
+        board = board1;
+        cost = cost1;
+        val = val1;
+        selectable = selectable1;
+        n_select = n_select1;
+        recent = recent1;
+    }
+    */
 };
 
 struct Beam {
@@ -38,7 +56,6 @@ struct Beam {
     int height;  //縦
     int s_rate, c_rate;
     vector<vector<int>> relate; //それぞれの座標に対する隣接リスト
-    int be_wid;
 
     set predata[10];
     set nextdata[10];
@@ -51,7 +68,7 @@ struct Beam {
         int c;  //交換対象の座標
         int i,j;
 
-        if (n_val == 0) {
+        if (n_val == 0&&gCount==0) {
 
             gCount++;
             be_finished(moved);
@@ -60,10 +77,9 @@ struct Beam {
         }
         else {
             queue<int>n_moved;
-            /*もし直前の操作が選択ではなく、
-            残り選択可能回数が0ではない
+            /*もし、残り選択可能回数が0ではない
             なら選択操作を行う*/
-            if (selectable != 0) {
+            if (selectable > 1) {
                 for (i = 0; i < width * height; i++) {
                     if (i != board.at(i) && i != n_select) {
                         for (j = 0; j < 4; j++) {
@@ -145,13 +161,12 @@ struct Beam {
         val *= c_rate;
         return val;
     }
-    Beam(vector<vector<int>> rel, int w, int h, int sr, int cr,int bw) {
+    Beam(vector<vector<int>> rel, int w, int h, int sr, int cr) {
         width = w;
         height = h;
         s_rate = sr;
         c_rate = cr;
         relate = rel;
-        be_wid = bw;
     }
 };
 
@@ -164,8 +179,6 @@ int main() {
     vector<int> board(width * height);
     cin >> selectable;
     cin >> s_rate >> c_rate;
-    int be_wid;
-    cin >> be_wid;
 
     int i, j, k;
     for (i = 0; i < width * height; i++) {
@@ -219,7 +232,7 @@ int main() {
     //relateの書き込み終了
 
 
-    Beam problem(relate, width, height, s_rate, c_rate,be_wid);
+    Beam problem(relate, width, height, s_rate, c_rate);
 
 
 
@@ -230,6 +243,7 @@ int main() {
     int cost = 0;
     queue<int> moved;//駒の操作を管理するqueue
 
+    problem.predata[0].moved = moved;
     problem.predata[0].board = board;
     problem.predata[0].cost = 0;
     problem.predata[0].val = val;
@@ -269,7 +283,7 @@ int main() {
 
                 problem.nextdata[node_count].cost = problem.predata[root].cost + s_rate + c_rate;
                 problem.nextdata[node_count].val = itr->first;
-                problem.nextdata[node_count].selectable = problem.predata[root].selectable - 1;
+                problem.nextdata[node_count].selectable = problem.predata[root].selectable-1;
                 problem.nextdata[node_count].n_select = sel;
                 problem.nextdata[node_count].recent =dir;
             }
@@ -291,7 +305,7 @@ int main() {
                 problem.nextdata[node_count].recent = dir;
             }
             node_count++;
-            if (node_count >= be_wid) break;
+            if (node_count == be_size) break;
         }
         depth++;
 
@@ -300,7 +314,7 @@ int main() {
         }
 
         for (i = 0; i < node_count; i++) {
-            problem.be_search(problem.predata[i].board, problem.predata[i].moved, problem.predata[i].cost, problem.predata[i].selectable, problem.predata[i].n_select, problem.predata[i].recent, problem.predata[i].val,root);
+            problem.be_search(problem.predata[i].board, problem.predata[i].moved, problem.predata[i].cost, problem.predata[i].selectable, problem.predata[i].n_select, problem.predata[i].recent, problem.predata[i].val, i);
         }
     }
     //clock_t end = clock();
