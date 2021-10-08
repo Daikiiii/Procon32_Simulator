@@ -12,7 +12,7 @@ using namespace std;
 
 int gCount = 0;
 multimap<int, pair<int,int>> node;
-#define be_size 10
+#define be_size 30
 
 class set {
 public:
@@ -58,17 +58,16 @@ struct Beam {
         int c;  //交換対象の座標
         int i,j;
 
-        if (n_val == 0&&gCount==0) {
+        /*if (n_val == 0&&gCount==0) {
 
             gCount++;
             be_finished(moved);
             //cout << "cost=" << cost << endl;
 
-        }
-        else {
+        }*/
+        //else {
             queue<int>n_moved;
-            /*もし、残り選択可能回数が0ではない
-            なら選択操作を行う*/
+            /*選択操作を行う*/
             if (selectable > 1) {
                 for (i = 0; i < width * height; i++) {
                     if (i != board.at(i) && i != n_select) {
@@ -90,7 +89,7 @@ struct Beam {
                     node.emplace(valu, make_pair(i, pre_root));
                 }
             }
-        }
+        //}
     }
     void be_finished(queue<int> moved) {    //探索成功
         int s_count = 0; //選択回数のカウンター
@@ -274,7 +273,7 @@ int main() {
                 problem.nextdata[node_count].cost = problem.predata[root].cost + s_rate + c_rate;
                 problem.nextdata[node_count].val = itr->first;
                 problem.nextdata[node_count].selectable = problem.predata[root].selectable-1;
-                problem.nextdata[node_count].n_select = sel;
+                problem.nextdata[node_count].n_select = c;
                 problem.nextdata[node_count].recent =dir;
             }
             else {                                          //交換操作
@@ -291,7 +290,7 @@ int main() {
                 problem.nextdata[node_count].cost = problem.predata[root].cost + c_rate;
                 problem.nextdata[node_count].val = itr->first;
                 problem.nextdata[node_count].selectable = problem.predata[root].selectable;
-                problem.nextdata[node_count].n_select = sel;
+                problem.nextdata[node_count].n_select = c;
                 problem.nextdata[node_count].recent = dir;
             }
             node_count++;
@@ -304,6 +303,11 @@ int main() {
         }
 
         for (i = 0; i < node_count; i++) {
+            if (gCount == 0 && problem.predata[i].val == 0) {
+                problem.be_finished(problem.predata[i].moved);
+                gCount++;
+                break;
+            }
             problem.be_search(problem.predata[i].board, problem.predata[i].moved, problem.predata[i].cost, problem.predata[i].selectable, problem.predata[i].n_select, problem.predata[i].recent, problem.predata[i].val, i);
         }
     }
