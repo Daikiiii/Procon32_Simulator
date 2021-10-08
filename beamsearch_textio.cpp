@@ -221,7 +221,7 @@ struct Beam {
 
         FILE* outfile;
 
-        outfile = fopen("output.tt", "w");
+        outfile = fopen("output.txt", "w"); //パスを適宜変更してください
 
         while (moved.empty() == false) {
 
