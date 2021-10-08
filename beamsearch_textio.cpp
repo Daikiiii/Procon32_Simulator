@@ -106,13 +106,13 @@ public:
 
 struct Beam {
 
-    int width; //‰¡
+    int width; //æ¨ª
 
-    int height;  //c
+    int height;  //ç¸¦
 
     int s_rate, c_rate;
 
-    vector<vector<int>> relate; //‚»‚ê‚¼‚ê‚ÌÀ•W‚É‘Î‚·‚é—×ÚƒŠƒXƒg
+    vector<vector<int>> relate; //ãã‚Œãã‚Œã®åº§æ¨™ã«å¯¾ã™ã‚‹éš£æ¥ãƒªã‚¹ãƒˆ
 
 
 
@@ -126,13 +126,13 @@ struct Beam {
 
 
 
-    void be_search(vector<int> board, queue<int>moved, int cost, int selectable, int n_select, int recent, int n_val, int pre_root) {    //n_select‚ÍŒ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒs[ƒX‚ÌÀ•W
+    void be_search(vector<int> board, queue<int>moved, int cost, int selectable, int n_select, int recent, int n_val, int pre_root) {    //n_selectã¯ç¾åœ¨é¸æŠã—ã¦ã„ã‚‹ãƒ”ãƒ¼ã‚¹ã®åº§æ¨™
 
 
 
         int valu;
 
-        int c;  //ŒğŠ·‘ÎÛ‚ÌÀ•W
+        int c;  //äº¤æ›å¯¾è±¡ã®åº§æ¨™
 
         int i, j;
 
@@ -157,9 +157,9 @@ struct Beam {
 
             queue<int>n_moved;
 
-            /*‚à‚µAc‚è‘I‘ğ‰Â”\‰ñ”‚ª0‚Å‚Í‚È‚¢
+            /*ã‚‚ã—ã€æ®‹ã‚Šé¸æŠå¯èƒ½å›æ•°ãŒ0ã§ã¯ãªã„
 
-            ‚È‚ç‘I‘ğ‘€ì‚ğs‚¤*/
+            ãªã‚‰é¸æŠæ“ä½œã‚’è¡Œã†*/
 
             if (selectable > 1) {
 
@@ -207,21 +207,21 @@ struct Beam {
 
     }
 
-    void be_finished(queue<int> moved) {    //’Tõ¬Œ÷
+    void be_finished(queue<int> moved) {    //æ¢ç´¢æˆåŠŸ
 
-        int s_count = 0; //‘I‘ğ‰ñ”‚ÌƒJƒEƒ“ƒ^[
+        int s_count = 0; //é¸æŠå›æ•°ã®ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼
 
-        queue<int> s_rec;    //‘I‘ğÀ•W‚Ì‹L˜^
+        queue<int> s_rec;    //é¸æŠåº§æ¨™ã®è¨˜éŒ²
 
-        int count;  //ŒğŠ·‰ñ”‚ÌƒJƒEƒ“ƒ^[
+        int count;  //äº¤æ›å›æ•°ã®ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼
 
-        queue<int> c_count; //ŒğŠ·‰ñ”‚ÌƒJƒEƒ“ƒg‚Ì‹L˜^
+        queue<int> c_count; //äº¤æ›å›æ•°ã®ã‚«ã‚¦ãƒ³ãƒˆã®è¨˜éŒ²
 
-        queue<int> c_rec;  //ŒğŠ·•ûŒü‚Ì‹L˜^
+        queue<int> c_rec;  //äº¤æ›æ–¹å‘ã®è¨˜éŒ²
 
         FILE* outfile;
 
-        outfile = fopen("output.tet", "w");
+        outfile = fopen("output.tt", "w");
 
         while (moved.empty() == false) {
 
@@ -235,7 +235,7 @@ struct Beam {
 
             while (moved.empty() == false) {
 
-                if (moved.front() > 4) break;   //‘I‘ğ‘€ì‚È‚çbreak
+                if (moved.front() > 4) break;   //é¸æŠæ“ä½œãªã‚‰break
 
                 count++;
 
@@ -313,7 +313,7 @@ struct Beam {
 
     }
 
-    int piece_val(int np, int cp) {  //np->Œ»İˆÊ’ucp->³‰ğˆÊ’u
+    int piece_val(int np, int cp) {  //np->ç¾åœ¨ä½ç½®cp->æ­£è§£ä½ç½®
 
         int cx = cp % width;
 
@@ -357,11 +357,11 @@ int main() {
 
     int selectable;
 
-    int s_rate, c_rate; //s_rate‚Í‘I‘ğƒRƒXƒg,c_rate‚ÍŒğŠ·ƒRƒXƒg
+    int s_rate, c_rate; //s_rateã¯é¸æŠã‚³ã‚¹ãƒˆ,c_rateã¯äº¤æ›ã‚³ã‚¹ãƒˆ
 
     FILE* infile;
 
-    infile = fopen("input.txt", "r"); //ƒpƒX‚ğ“K‹X•ÏX‚µ‚Ä‚­‚¾‚³‚¢
+    infile = fopen("input.txt", "r"); //ãƒ‘ã‚¹ã‚’é©å®œå¤‰æ›´ã—ã¦ãã ã•ã„
 
     (void)fscanf(infile, "%d %d", &width, &height); //cin >> width >> height;
 
@@ -389,7 +389,7 @@ int main() {
 
 
 
-    //relate‚Ì‘‚«‚İ
+    //relateã®æ›¸ãè¾¼ã¿
 
     for (i = 0; i < height; i++) {
 
@@ -399,7 +399,7 @@ int main() {
 
                 switch (k) {
 
-                case 0: //ã•ûŒü‚Ì—×Ú
+                case 0: //ä¸Šæ–¹å‘ã®éš£æ¥
 
                     if (i != 0)
 
@@ -411,7 +411,7 @@ int main() {
 
                     break;
 
-                case 1: //‰E•ûŒü
+                case 1: //å³æ–¹å‘
 
                     if (j != width - 1)
 
@@ -423,9 +423,9 @@ int main() {
 
                     break;
 
-                case 2: //‰º•ûŒü
+                case 2: //ä¸‹æ–¹å‘
 
-                    if (height == 2) {   //ƒ_ƒu‚è–h~
+                    if (height == 2) {   //ãƒ€ãƒ–ã‚Šé˜²æ­¢
 
                         relate.at(i * width + j).at(2) = -1;
 
@@ -443,7 +443,7 @@ int main() {
 
                     break;
 
-                case 3: //¶•ûŒü
+                case 3: //å·¦æ–¹å‘
 
                     if (width == 2) {
 
@@ -471,7 +471,7 @@ int main() {
 
     }
 
-    //relate‚Ì‘‚«‚İI—¹
+    //relateã®æ›¸ãè¾¼ã¿çµ‚äº†
 
 
 
@@ -495,7 +495,7 @@ int main() {
 
     int cost = 0;
 
-    queue<int> moved;//‹î‚Ì‘€ì‚ğŠÇ—‚·‚équeue
+    queue<int> moved;//é§’ã®æ“ä½œã‚’ç®¡ç†ã™ã‚‹queue
 
 
 
@@ -539,9 +539,9 @@ int main() {
 
         for (auto itr = node.begin(); itr != node.end(); ++itr) {
 
-            root = itr->second.second;  //  ‘JˆÚŒ³‚Ìw’è
+            root = itr->second.second;  //  é·ç§»å…ƒã®æŒ‡å®š
 
-            if (itr->second.first >= 1000 || depth == 0) {      //‘I‘ğ+ŒğŠ·‘€ì
+            if (itr->second.first >= 1000 || depth == 0) {      //é¸æŠ+äº¤æ›æ“ä½œ
 
                 dir = itr->second.first % 1000;
 
@@ -587,7 +587,7 @@ int main() {
 
             }
 
-            else {                                          //ŒğŠ·‘€ì
+            else {                                          //äº¤æ›æ“ä½œ
 
                 dir = itr->second.first;
 
@@ -605,7 +605,7 @@ int main() {
 
                 problem.nextdata[node_count].board = problem.predata[root].board;
 
-                swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));   //–ß‚·
+                swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));   //æˆ»ã™
 
 
 
