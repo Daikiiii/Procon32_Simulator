@@ -242,6 +242,7 @@ void MainWindow::on_pushButton_4_clicked()
     QStringList args;
     args << pythonCodePath;
     m_proc.start("python", args);
+    cout<<"dawnload button pusshed"<<endl;
 }
 
 
@@ -253,11 +254,15 @@ void MainWindow::on_pushButton_5_clicked()
     QStringList args;
     args << pythonCodePath;
     m_proc.start("python", args);
+
 }
 
 
 void MainWindow::on_pushButton_3_clicked()
 {
+    QString s;
+    s=ui->lineEdit->text();
+    qDebug()<<s;
     int width, height;
     int selectable;
     int s_rate, c_rate; //s_rateは選択コスト,c_rateは交換コスト

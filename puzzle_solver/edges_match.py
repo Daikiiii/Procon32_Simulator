@@ -12,7 +12,6 @@ LEFT = 0
 RIGHT = 1
 UP = 2
 DOWN = 3
-
 def __compute_weights(pieces,pieces_count,edges):
     '''
     S(xi,xj,erel)==S(K,K,16) 3D array
@@ -34,8 +33,8 @@ def __compute_weights(pieces,pieces_count,edges):
         #print(normalized_weights[i, j, erel])
     return normalized_weights
 def __initial_positions(pieces,pieces_count,width,height,edges):
-    height=16
-    width=16
+    height=20
+    width=20
     def initial_puzzle_data(width,height):
         puzzle_cluster={}
         puzzle_cluster_pisition={}
@@ -194,35 +193,54 @@ def __initial_positions(pieces,pieces_count,width,height,edges):
                         rot_c[rot_cluster[i,j]]+=(4-rot)
         #print("i",rot_cluster_matrix.shape)
         return rot_cluster_matrix,position_i,rot_c%4
-    def fix_puzzle(puzzle,puzzle_rot,position):
+    def fix_puzzle(puzzle,puzzle_rot,trees_i):
         rot=puzzle_rot[0]
+        rot=(4-rot)
+        rot%=4
+        row=0
+        col=0
+        for i in range(height):
+            if np.any(puzzle[i,:]!=-1):
+                row+=1
+        for i in range(width):
+            if np.any(puzzle[:,i]!=-1):
+                col+=1
 
-        if rot==0:
-            return
-        puzzle=np.rot90(puzzle,rot)
+        if rot==0 or rot==2:
+            rot_puzzle=np.empty((row,col),dtype=np.int32)
+            rot_puzzle.fill(-1)
+            rot_puzzle=np.rot90(puzzle[:row,:col],-rot)
 
-        puzzle_rot+=(4-rot)
-        puzzle_rot%=4
-
-    def save_cluster(puzzle_cluster,puzzle_cluster_position,puzzle_cluster_rotation,node_tree,trees):
-        cl_save=copy.deepcopy(puzzle_cluster)
-        pos_save=copy.deepcopy(puzzle_cluster_position)
-        rot_save=copy.deepcopy(puzzle_cluster_rotation)
-        node_save=copy.deepcopy(node_tree)
-        trees_save=copy.deepcopy(trees)
-        #print_clu(cl_save,pos_save,rot_save,node_save,trees_save)
-    def print_clu(cl_save,pos_save,rot_save,node_save,trees_save):
-        node_list=np.unique(node_save)
-            
-        for i in node_list:
-            rotation_place = __place_pieces(pos_save[i],rot_save[i],height,width)
-            solution=__paste_pieces(pieces,cl_save[i],rotation_place,width,height)
-            solution.show()
+        if rot==1 or rot==3:  
+            rot_puzzle=np.empty((col,row),dtype=np.int32)
+            rot_puzzle.fill(-1)
+            rot_puzzle=np.rot90(puzzle[:row,:col],-rot)
+    
+        rot_matrix=np.empty((height,width),dtype=np.int32)
+        rot_matrix.fill(-1)
+        position=np.zeros((height*width,2),dtype=np.int32)
+    
+        if rot==0 or rot==2:
+            for i in range(row):
+                for j in range(col):
+                    if rot_puzzle[i,j] in trees_i:
+                        rot_matrix[i,j]=rot_puzzle[i,j]
+                        position[rot_puzzle[i,j]]=[i,j]
+                        puzzle_rot[rot_puzzle[i,j]]+=rot
+    
+        if rot==1 or rot==3:
+            for i in range(col):
+                for j in range(row):
+                    if rot_puzzle[i,j] in trees_i:
+                        rot_matrix[i,j]=rot_puzzle[i,j]
+                        position[rot_puzzle[i,j]]=[i,j]
+                        puzzle_rot[rot_puzzle[i,j]]+=rot
+        
+        return rot_matrix,position,puzzle_rot%4
 
     puzzle_cluster,puzzle_cluster_position,puzzle_cluster_rotation=initial_puzzle_data(width,height)
     trees = [{i} for i in range(pieces_count)]
-    node_tree = [i for i in range(pieces_count)]                            
-    conflict=0
+    node_tree = [i for i in range(pieces_count)]
     for i, j, rel in edges:
         tree_i, tree_j = node_tree[i], node_tree[j]
         
@@ -234,10 +252,6 @@ def __initial_positions(pieces,pieces_count,width,height,edges):
         '''ピースの重なりがないか判定 '''
         took_same_place,offset_j=conflict_check(rot_posi_i,rot_position,rel,i,j,trees,tree_i,tree_j)
         if any(took_same_place):
-            #print("conflict")
-            if conflict==0:
-                save_cluster(puzzle_cluster,puzzle_cluster_position,puzzle_cluster_rotation,node_tree,trees)
-            conflict+=1
             continue  
 
         puzzle_cluster[tree_i]=rot_c_i
@@ -255,22 +269,26 @@ def __initial_positions(pieces,pieces_count,width,height,edges):
         puzzle_cluster[tree_i]=shift_cluster_i(puzzle_cluster_position[tree_i],puzzle_cluster[tree_i],offset_j,trees[tree_i])
         
         '''
-        rotation_place = __place_pieces(puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],height,width)
+        rotation_place = __place_pieces(puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],height,width,puzzle_cluster[tree_i][0,0])
         solution=__paste_pieces(pieces,puzzle_cluster[tree_i],rotation_place,width,height)
         solution.show()
         '''
-    rotation_place = __place_pieces(puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],height,width)
-    solution=__paste_pieces(pieces,puzzle_cluster[tree_i],rotation_place,width,height)
-    solution.show()
+                
+    puzzle_cluster[tree_i],puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i]=fix_puzzle(puzzle_cluster[tree_i],puzzle_cluster_rotation[tree_i],trees[tree_i]) 
+    rotation_place = __place_pieces(puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],height,width,puzzle_cluster[tree_i][0,0])
+    cluster=__paste_pieces(pieces,puzzle_cluster[tree_i],rotation_place,width,height)
+    cluster.save("C:/Procon32_Simulator/puzzle_solver/cluster.png")
+    cluster.show()
 
-    return puzzle_cluster[tree_i],puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i]
+    return puzzle_cluster[tree_i],puzzle_cluster_position[tree_i],puzzle_cluster_rotation[tree_i],cluster
     
-def __place_pieces(positions,rotations,puzzle_height,puzzle_width):
+def __place_pieces(positions,rotations,puzzle_height,puzzle_width,rot_00):
 
     rotation_place = np.zeros((puzzle_height, puzzle_width), dtype=np.int32)
     for i, position in enumerate(positions):
         rotation_place[tuple(position)]=rotations[i]
-
+    if rot_00!=-1:
+        rotation_place[0,0]=rotations[rot_00]
     return rotation_place
 def TrimPuzzle(cluster,rot_cl,nr,nc,rotFlag):
 
