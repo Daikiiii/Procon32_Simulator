@@ -4,7 +4,7 @@ import requests
 URL = "https://procon32-practice.kosen.work"
 
 #適当に設定したパスなのであまり気にしないでください
-File_Path="D:/Python_Script/puzzle_text/puzzle_solution.txt"
+File_Path="D:/Python_Script/puzzle_text/solution.txt"
 
 #--token=b604db66dd97b24ee2a6895034893add998a995a2fd3f52fb0ae1a213dee8fa1
 def submit(url,file_path):
@@ -15,9 +15,12 @@ def submit(url,file_path):
         r = requests.post(endpoint, headers={"procon-token": token}, data=fdata)
         #r = requests.post(endpoint, headers={"procon-token": token}, data=f)
         if r.status_code == 200:
+            print(r.text.strip())
             print("提出完了")
             return
         #r.status_code==400 format error 提出できていない
         print({r.status_code},{r.text.strip()})
+
+
 if __name__ == "__main__":
     submit(URL,File_Path)
