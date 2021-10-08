@@ -26,9 +26,10 @@ int gCount = 0;
 
 multimap<int, pair<int, int>> node;
 
-#define be_size 10
+#define be_size 50
 
 
+char rot[257];//回転情報の保存
 
 class set {
 
@@ -221,7 +222,9 @@ struct Beam {
 
         FILE* outfile;
 
-        outfile = fopen("output.txt", "w"); //パスを適宜変更してください
+        outfile = fopen("output.txt", "w");
+
+        fprintf(outfile, "%s\n", rot);
 
         while (moved.empty() == false) {
 
@@ -301,9 +304,11 @@ struct Beam {
 
                 c_rec.pop();
 
-                fprintf(outfile, "\n"); //cout << endl;
+                
 
             }
+            
+            fprintf(outfile, "\n"); //cout << endl;
 
             c_count.pop();
 
@@ -347,9 +352,61 @@ struct Beam {
 
 };
 
+void inputdata(){
+    int width, height;
+    int selectable;
+    int s_rate, c_rate;
+
+    FILE* datafile;
+
+    datafile = fopen("C:/Procon32_Simulator/puzzle_solver/puzzle_text/puzzle_solution.txt", "r");
+
+    (void)fscanf(datafile, "%d %d", &width, &height);
+
+    vector<int> board(width * height);
+
+    (void)fscanf(datafile, "%d", &selectable);
+    (void)fscanf(datafile, "%d %d", &s_rate, &c_rate);
+    for (int i = 0; i < width * height; i++) {
+        (void)fscanf(datafile, "%x", &board[i]);
+    }
+    (void)fscanf(datafile, "%s", rot);
+
+    fclose(datafile);
+
+
+    FILE* infile;
+    infile = fopen("input.txt", "w");
+    fprintf(infile, "%d %d\n", width, height);
+    fprintf(infile, "%d\n", selectable);
+    fprintf(infile, "%d %d\n", s_rate, c_rate);
+    for (int i = 0; i < width * height; i++) {
+        fprintf(infile, "%x ", board[i]);
+    }
+    fprintf(infile, "\n");
+    fclose(infile);
+}
+
+void outputdata() {
+    FILE* outfile;
+    FILE* answerfile;
+    int temp;
+
+    outfile = fopen("output.txt", "r");
+    answerfile = fopen("C:/Procon32_Simulator/puzzle_solver/puzzle_text/solution.txt", "w");
+
+    while ((temp = fgetc(outfile)) != EOF) {
+        fprintf(answerfile, "%c", temp);
+    }
+
+    fclose(outfile);
+    fclose(answerfile);
+}
 
 
 int main() {
+
+    inputdata();
 
     //clock_t start = clock();
 
@@ -650,6 +707,8 @@ int main() {
     //clock_t end = clock();
 
     //cout << "time=" << ((double)end - start) / 1000 << endl;
+
+    outputdata();
 
     return 0;
 
