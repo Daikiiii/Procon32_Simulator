@@ -3,17 +3,17 @@
 #include<stdio.h>
 
 
-//USB‚©‚çƒpƒ\ƒRƒ“‚Éƒf[ƒ^‚ğæ‚è‚Ş
+//USBã‹ã‚‰ãƒ‘ã‚½ã‚³ãƒ³ã«ãƒ‡ãƒ¼ã‚¿ã‚’å–ã‚Šè¾¼ã‚€
 void readfunc() {
 
-	char data[500];
+	char data[10000];
 	FILE* outfile;
 	FILE* infile;
 
-	outfile = fopen("output.txt", "a"); //ƒf[ƒ^‚ğæ‚è‚Şæ(“K‹X•ÏX‚ª•K—v‚Å‚·)
-	infile = fopen("D:/“dH•”/contest_output.txt", "r"); //ƒf[ƒ^‚ÌQÆŒ³(“K‹X•ÏX‚ª•K—v‚Å‚·)
+	outfile = fopen("output.txt", "a"); //ãƒ‡ãƒ¼ã‚¿ã‚’å–ã‚Šè¾¼ã‚€å…ˆ(é©å®œå¤‰æ›´ãŒå¿…è¦ã§ã™)
+	infile = fopen("D:/é›»å·¥éƒ¨/contest_output.txt", "r"); //ãƒ‡ãƒ¼ã‚¿ã®å‚ç…§å…ƒ(é©å®œå¤‰æ›´ãŒå¿…è¦ã§ã™)
 
-	while (fgets(data,128,infile ) != NULL){
+	while (fgets(data,300,infile ) != NULL){
 		fprintf(outfile,"%s",data);
 	}
 
@@ -26,17 +26,17 @@ void readfunc() {
 	fclose(infile);
 }
 
-//ƒpƒ\ƒRƒ“‚©‚çUSB‚Éƒf[ƒ^‚ğ‘‚«‚Ş
+//ãƒ‘ã‚½ã‚³ãƒ³ã‹ã‚‰USBã«ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
 void writefunc() {
 
-	char data[500];
+	char data[10000];
 	FILE* outfile;
 	FILE* infile;
 
-	outfile = fopen("D:/“dH•”/contest_output.txt", "a"); //ƒf[ƒ^‚ğ‘‚«‚Şæ
-	infile = fopen("output.txt", "r"); //ƒf[ƒ^‚ÌQÆŒ³
+	outfile = fopen("D:/é›»å·¥éƒ¨/contest_output.txt", "a"); //ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€å…ˆ
+	infile = fopen("output.txt", "r"); //ãƒ‡ãƒ¼ã‚¿ã®å‚ç…§å…ƒ
 
-	while (fgets(data, 128, infile) != NULL) {
+	while (fgets(data, 300, infile) != NULL) {
 		fprintf(outfile, "%s", data);
 	}
 
