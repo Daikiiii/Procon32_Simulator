@@ -12,9 +12,11 @@ using namespace std;
 
 int gCount = 0;
 multimap<int, pair<int, int>> node;
-#define be_size 10
+#define be_size 30
 
 char rot[257];//回転情報の保存
+
+int parity(vector<int> board,int size);
 
 class set {
 public:
@@ -48,20 +50,26 @@ struct Beam {
 
 
     void be_search(vector<int> board,int selectable, int n_select, int recent, int n_val, int pre_root) {    //n_selectは現在選択しているピースの座標
-        cout << "pre_root=" << pre_root << endl;
         int i, j,k;
         int valu;
         int c;  //交換対象の座標
         /*選択操作を行う*/
-        if (selectable > 0) {
+        if (selectable > 0 && (recent == -1 || piece_val(n_select, board.at(n_select)) <= 1)) {
             for (i = 0; i < width * height; i++) {
-                if (i != board.at(i) && i != n_select) {
+                if (i != board.at(i) && (i != n_select || recent == 0)) {
                     for (j = 0; j < 4; j++) {
                         if (relate.at(i).at(j) != -1) {
                             c = relate.at(i).at(j);
                             valu = n_val - (piece_val(c, board.at(c)) + piece_val(i, board.at(i))) + (piece_val(c, board.at(i)) + piece_val(i, board.at(c)));
-                            node.emplace(valu, make_pair((i + 1) * 1000 + j, pre_root));
-                            
+                            cout << valu << endl;
+                            if (selectable == 1) {
+                                swap(board.at(c),board.at(i));
+                            }
+                            if(selectable!=1||parity(board,(width*height))==0)
+                                node.emplace(valu, make_pair((i + 1) * 1000 + j, pre_root));
+                            if (selectable == 1) {
+                                swap(board.at(c), board.at(i));
+                            }
                         }
                     }
                 }
@@ -72,7 +80,16 @@ struct Beam {
                 if (abs(k -recent) != 2 && relate.at(n_select).at(k) != -1){
                     c = relate.at(n_select).at(k);
                     valu = n_val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
-                    node.emplace(valu, make_pair(k, pre_root));
+                    cout << valu << endl;
+                    if (selectable <= 1) {
+                        swap(board.at(c), board.at(k));
+                    }
+                    if (selectable > 1 || parity(board, (width * height)) == 0)
+                        node.emplace(valu, make_pair(k, pre_root));
+                    if (selectable <= 1) {
+                        swap(board.at(c), board.at(k));
+                    }
+                    
                 }
             }
         }
@@ -139,7 +156,8 @@ struct Beam {
         int nx = np % width;
         int ny = np / width;
         int val = min(abs(nx - cx), width - abs(nx - cx)) + min(abs(ny - cy), height - abs(ny - cy));
-        return val*c_rate;
+        int poswei = abs(((int)width / 2) - cx) + (((int)height / 2) - cy);
+        return (val+val*val)*c_rate;
     }
     Beam(vector<vector<int>> rel, int w, int h, int sr, int cr) {
         relate = rel;
@@ -279,7 +297,7 @@ int main() {
     problem.predata[0].board = board;
     problem.predata[0].val = val;
     problem.predata[0].selectable = selectable;
-    problem.predata[0].n_select = -1;
+    problem.predata[0].n_select = 0;
     problem.predata[0].recent = -1;
 
 
@@ -332,16 +350,18 @@ int main() {
                 problem.nextdata[node_count].n_select = c;
                 problem.nextdata[node_count].recent = dir;
             }
-            cout << node_count << endl;
             node_count++;
             if (node_count == be_size) break;
         }
         depth++;
-        //cout << "depth=" << depth << endl;
+        cout << "depth=" << depth << endl;
 
         for (i = 0; i < node_count; i++) {
             problem.predata[i] = problem.nextdata[i];
         }
+
+        node.clear();
+
         for (l = 0; l < node_count; l++) {
             if (gCount == 0 && problem.predata[l].val == 0) {
                 problem.be_finished(problem.predata[l].moved);
@@ -354,8 +374,29 @@ int main() {
 
     }
     outputdata();
-    //cout <<"depth="<< depth<<endl;
+    cout <<"depth="<< depth<<endl;
     //clock_t end = clock();
     //cout << "time=" << ((double)end - start) / 1000 << endl;
     return 0;
+}
+
+int parity(vector<int> board,int size) {
+    int i;
+    int turning = 0;
+    bool nup = true;
+    for (i = 0; i < size-1; i++) {
+        if (nup) {
+            if (board.at(i) > board.at(i + 1)) {
+                nup = false;
+                turning++;
+            }
+        }
+        else {
+            if (board.at(i) < board.at(i + 1)) {
+                nup = true;
+                turning++;
+            }
+        }
+    }
+    return turning % 2;
 }
