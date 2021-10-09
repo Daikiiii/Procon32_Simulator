@@ -46,7 +46,7 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(10, 10, 131, 28));
+        pushButton->setGeometry(QRect(20, 10, 131, 28));
         textBrowser = new QTextBrowser(centralwidget);
         textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
         textBrowser->setGeometry(QRect(10, 130, 256, 241));
@@ -61,10 +61,10 @@ public:
         pushButton_3->setGeometry(QRect(10, 90, 131, 28));
         pushButton_4 = new QPushButton(centralwidget);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setGeometry(QRect(162, 30, 111, 31));
+        pushButton_4->setGeometry(QRect(160, 10, 111, 31));
         pushButton_5 = new QPushButton(centralwidget);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        pushButton_5->setGeometry(QRect(162, 70, 111, 28));
+        pushButton_5->setGeometry(QRect(160, 50, 111, 28));
         lineEdit = new QLineEdit(centralwidget);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setGeometry(QRect(300, 80, 201, 221));

@@ -4,10 +4,12 @@
 
 
 #include <iostream>
-#include <iostream>
 #include<algorithm>
 #include<vector>
 #include<queue>
+#include<map>
+#include<time.h>
+#include<cassert>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -15,71 +17,104 @@
 using namespace std;
 
 int gCount = 0;
+multimap<int, pair<int, int>> node;
+#define be_size 30
 
-struct IDA {
+char rot[257];//回転情報の保存
+
+class set {
+public:
+    queue<int> moved;
+    vector<int> board;
+    int cost;
+    int val;
+    int selectable;
+    int n_select;
+    int recent;
+
+    set& operator =(const set& temp) {
+        try {
+            moved = temp.moved;
+            board = temp.board;
+            cost = temp.cost;
+            val = temp.val;
+            selectable = temp.selectable;
+            n_select = temp.n_select;
+            recent = temp.recent;
+            return *this;
+        }
+        catch (...) {
+            //assert(false);
+        }
+    }
+};
+
+struct Beam {
     int width; //横
     int height;  //縦
     int s_rate, c_rate;
     vector<vector<int>> relate; //それぞれの座標に対する隣接リスト
-    void id_search(vector<int> board,queue<int>moved,int limit, int cost, int selectable,int n_select, int val,int recent) {    //n_selectは現在選択しているピースの座標
-        int n_val,n_cost;
+
+    set predata[be_size];
+    set nextdata[be_size];
+
+
+
+    void be_search(vector<int> board, queue<int>moved, int cost, int selectable, int n_select, int recent, int n_val, int pre_root) {    //n_selectは現在選択しているピースの座標
+
+        int valu;
         int c;  //交換対象の座標
-        int i;
-        if (cost <= limit&&val==0) {
+        int i, j;
 
-                gCount++;
-                id_finished(moved);
-                cout <<"cost="<< cost << endl;
-
-        }
-        else if (cost >= limit) {
-
-        }
-        else {
-            queue<int>n_moved;
-            /*もし直前の操作が選択
-            残り選択可能回数が0
-            現在選択している座標のピースが正解位置ではない
-            のいずれかを満たすならなら交換操作を行う*/
-            if (recent >= 1000 || selectable == 0||n_select!=board.at(n_select)) {
-                for (i = 0; i < 4; i++) {
-                    if (abs(i-recent) == 2||relate.at(n_select).at(i)==-1) continue;
-                    n_moved = moved;
-                    c = relate.at(n_select).at(i);
-                    n_val = val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
-                    //printf("%d %d %d %d %d %d\n", c, board.at(c), n_select, board.at(n_select), val, n_val);
-                    n_cost = cost + c_rate;
-                    swap(board.at(n_select), board.at(c));
-                    n_moved.push(i);
-                    if (n_val + n_cost <= limit)
-                        id_search(board,n_moved, limit, n_cost,selectable, c, n_val,i);
-                    swap(board.at(n_select), board.at(c));  //元に戻す
-                }
-            }
-            else {
-                for (i = 0; i < width * height;i++) {
-                    if (i == board.at(i)) continue;
-                    n_moved = moved;
-                    n_moved.push(i + 1000);
-                    n_cost = cost + s_rate;
-                    if (val + n_cost <= limit)
-                        id_search(board,n_moved, limit, n_cost,selectable-1, i, val,i+1000);
+        /*if (n_val == 0&&gCount==0) {
+            gCount++;
+            be_finished(moved);
+            //cout << "cost=" << cost << endl;
+        }*/
+        //else {
+        queue<int>n_moved;
+        /*選択操作を行う*/
+        if (selectable > 1) {
+            for (i = 0; i < width * height; i++) {
+                if (i != board.at(i) && i != n_select) {
+                    for (j = 0; j < 4; j++) {
+                        if (relate.at(i).at(j) != -1) {
+                            c = relate.at(i).at(j);
+                            valu = n_val - (piece_val(c, board.at(c)) + piece_val(i, board.at(i))) + (piece_val(c, board.at(i)) + piece_val(i, board.at(c)));
+                            node.emplace(valu, make_pair((i + 1) * 1000 + j, pre_root));
+                        }
+                    }
                 }
             }
         }
+        if (recent != -1) {
+            for (i = 0; i < 4; i++) {
+                if (abs(i - recent) == 2 || relate.at(n_select).at(i) == -1) continue;
+                c = relate.at(n_select).at(i);
+                valu = n_val - (piece_val(c, board.at(c)) + piece_val(n_select, board.at(n_select))) + (piece_val(c, board.at(n_select)) + piece_val(n_select, board.at(c)));
+                node.emplace(valu, make_pair(i, pre_root));
+            }
+        }
+        //}
     }
-    void id_finished(queue<int> moved) {    //探索成功時の最終処理
-       int s_count = 0; //選択回数のカウンター
+    void be_finished(queue<int> moved) {    //探索成功
+        int s_count = 0; //選択回数のカウンター
         queue<int> s_rec;    //選択座標の記録
         int count;  //交換回数のカウンター
         queue<int> c_count; //交換回数のカウントの記録
         queue<int> c_rec;  //交換方向の記録
+
+        FILE* outfile;
+        outfile = fopen("output.txt", "w");
+        fprintf(outfile, "%s\n", rot);
+
+
         while (moved.empty() == false) {
             s_count++;
-            s_rec.push(((moved.front() - 1000) / width)+ ((moved.front() - 1000) % width)*16);
+            s_rec.push(((moved.front() - 1000) / width) + ((moved.front() - 1000) % width) * 16);
             moved.pop();
             count = 0;
-            while (moved.empty()==false) {
+            while (moved.empty() == false) {
                 if (moved.front() > 4) break;   //選択操作ならbreak
                 count++;
                 c_rec.push(moved.front());
@@ -87,38 +122,39 @@ struct IDA {
             }
             c_count.push(count);
         }
-        cout << s_count << endl;
+        fprintf(outfile, "%d\n", s_count); //cout << s_count << endl;
         while (c_rec.empty() == false) {
             if (c_count.front() == 0) {
                 s_rec.pop();
                 c_count.pop();
                 continue;
             }
-            printf("%02x\n", s_rec.front());
+            fprintf(outfile, "%02x\n", s_rec.front()); //printf("%02x\n", s_rec.front());
             s_rec.pop();
-            cout << c_count.front() << endl;
+            fprintf(outfile, "%d\n", c_count.front()); //cout << c_count.front() << endl;
             for (int i = 0; i < c_count.front(); i++) {
                 switch (c_rec.front()) {
                 case 0:
-                    cout << 'U';
+                    fprintf(outfile, "U"); //cout << 'U';
                     break;
                 case 1:
-                    cout << 'R';
+                    fprintf(outfile, "R"); //cout << 'R';
                     break;
                 case 2:
-                    cout << 'D';
+                    fprintf(outfile, "D"); //cout << 'D';
                     break;
                 case 3:
-                    cout << 'L';
+                    fprintf(outfile, "L"); //cout << 'L';
                     break;
                 }
                 c_rec.pop();
-                cout << endl;
             }
+            fprintf(outfile, "\n"); //cout << endl;
             c_count.pop();
         }
+        fclose(outfile);
     }
-    int piece_val(int np,int cp) {  //np->現在位置cp->正解位置
+    int piece_val(int np, int cp) {  //np->現在位置cp->正解位置
         int cx = cp % width;
         int cy = cp / width;
         int nx = np % width;
@@ -127,16 +163,65 @@ struct IDA {
         val *= c_rate;
         return val;
     }
-    IDA(vector<vector<int>> rel,int w, int h,int sr,int cr) {
+    Beam(vector<vector<int>> rel, int w, int h, int sr, int cr) {
+        relate = rel;
         width = w;
         height = h;
         s_rate = sr;
         c_rate = cr;
-        relate = rel;
     }
 };
 
-int gcd(int a, int b);
+void inputdata() {
+    int width, height;
+    int selectable;
+    int s_rate, c_rate;
+
+    FILE* datafile;
+
+    datafile = fopen("C:/Procon32_Simulator/puzzle_solver/puzzle_text/puzzle_solution.txt", "r");
+
+    (void)fscanf(datafile, "%d %d", &width, &height);
+
+    vector<int> board(width * height);
+
+    (void)fscanf(datafile, "%d", &selectable);
+    (void)fscanf(datafile, "%d %d", &s_rate, &c_rate);
+    for (int i = 0; i < width * height; i++) {
+        (void)fscanf(datafile, "%x", &board[i]);
+    }
+    (void)fscanf(datafile, "%s", rot);
+
+    fclose(datafile);
+
+
+    FILE* infile;
+    infile = fopen("input.txt", "w");
+    fprintf(infile, "%d %d\n", width, height);
+    fprintf(infile, "%d\n", selectable);
+    fprintf(infile, "%d %d\n", s_rate, c_rate);
+    for (int i = 0; i < width * height; i++) {
+        fprintf(infile, "%x ", board[i]);
+    }
+    fprintf(infile, "\n");
+    fclose(infile);
+}
+
+void outputdata() {
+    FILE* outfile;
+    FILE* answerfile;
+    int temp;
+
+    outfile = fopen("output.txt", "r");
+    answerfile = fopen("C:/Procon32_Simulator/puzzle_solver/puzzle_text/solution.txt", "w");
+
+    while ((temp = fgetc(outfile)) != EOF) {
+        fprintf(answerfile, "%c", temp);
+    }
+
+    fclose(outfile);
+    fclose(answerfile);
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -157,6 +242,7 @@ MainWindow::MainWindow(QWidget *parent)
         args << pythonCodePath;
         m_proc.start("python", args);
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -254,113 +340,176 @@ void MainWindow::on_pushButton_5_clicked()
     QStringList args;
     args << pythonCodePath;
     m_proc.start("python", args);
+        cout<<"submit button pusshed"<<endl;
 
 }
 
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    QString s;
-    s=ui->lineEdit->text();
-    qDebug()<<s;
-    int width, height;
-    int selectable;
-    int s_rate, c_rate; //s_rateは選択コスト,c_rateは交換コスト
-    cin >> width >> height;
-    vector<int> board(width*height);
-    cin >> selectable;
-    cin >> s_rate >> c_rate;
+    inputdata();
 
-    int i,j,k;
-    for (i = 0; i < width*height; i++) {
-        (void)scanf("%x", &board[i]);
-        board.at(i) = (int)(board.at(i) / 16)  + (board.at(i) % 16)*width;
-    }
+        //clock_t start = clock();
+        int width, height;
+        int selectable;
+        int s_rate, c_rate; //s_rateは選択コスト,c_rateは交換コスト
 
-    vector<int> board_copy(width * height);
-    board_copy = board;
+        FILE* infile;
+        infile = fopen("input.txt", "r"); //パスを適宜変更してください
+        (void)fscanf(infile, "%d %d", &width, &height); //cin >> width >> height;
+        vector<int> board(width * height);
+        (void)fscanf(infile, "%d", &selectable); //cin >> selectable;
+        (void)fscanf(infile, "%d %d", &s_rate, &c_rate); //cin >> s_rate >> c_rate;
+        int i, j, k;
+        for (i = 0; i < width * height; i++) {
+            (void)fscanf(infile, "%x", &board[i]); //(void)scanf("%x", &board[i]);
+            board.at(i) = (int)(board.at(i) / 16) + (board.at(i) % 16) * width;
 
-    vector<vector<int>> relate(width*height, vector<int>(4));
+        }
+        fclose(infile);
 
-    //relateの書き込み
-    for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++) {
-            for (k = 0; k <= 3; k++) {
-                switch (k) {
-                case 0: //上方向の隣接
-                    if (i != 0)
-                        relate.at(i * width + j).at(0) = (i - 1) * width + j;
-                    else
-                        relate.at(j).at(0) = (height - 1) * width + j;
-                    break;
-                case 1: //右方向
-                    if (j != width - 1)
-                        relate.at(i * width + j).at(1) = i * width + j + 1;
-                    else
-                        relate.at(i * width + j).at(1) = i * width;
-                    break;
-                case 2: //下方向
-                    if (height == 2) {   //ダブり防止
-                        relate.at(i * width + j).at(2) = -1;
+        vector<vector<int>> relate(width * height, vector<int>(4));
+
+        //relateの書き込み
+        for (i = 0; i < height; i++) {
+            for (j = 0; j < width; j++) {
+                for (k = 0; k <= 3; k++) {
+                    switch (k) {
+                    case 0: //上方向の隣接
+                        if (i != 0)
+                            relate.at(i * width + j).at(0) = (i - 1) * width + j;
+                        else
+                            relate.at(j).at(0) = (height - 1) * width + j;
+                        break;
+                    case 1: //右方向
+                        if (j != width - 1)
+                            relate.at(i * width + j).at(1) = i * width + j + 1;
+                        else
+                            relate.at(i * width + j).at(1) = i * width;
+                        break;
+                    case 2: //下方向
+                        if (height == 2) {   //ダブり防止
+                            relate.at(i * width + j).at(2) = -1;
+                            break;
+                        }
+                        if (i != height - 1)
+                            relate.at(i * width + j).at(2) = (i + 1) * width + j;
+                        else
+                            relate.at(i * width + j).at(2) = j;
+                        break;
+                    case 3: //左方向
+                        if (width == 2) {
+                            relate.at(i * width + j).at(2) = -1;
+                            break;
+                        }
+                        if (j != 0)
+                            relate.at(i * width + j).at(3) = i * width + j - 1;
+                        else
+                            relate.at(i * width + j).at(3) = (i + 1) * width - 1;
                         break;
                     }
-                    if (i != height - 1)
-                        relate.at(i * width + j).at(2) = (i + 1) * width + j;
-                    else
-                        relate.at(i * width + j).at(2) = j;
-                    break;
-                case 3: //左方向
-                    if (width == 2) {
-                        relate.at(i * width + j).at(2) = -1;
-                        break;
-                    }
-                    if (j != 0)
-                        relate.at(i * width + j).at(3) = i * width + j - 1;
-                    else
-                        relate.at(i * width + j).at(3) = (i+1)*width - 1;
-                    break;
                 }
             }
         }
-    }
-    //relateの書き込み終了
+        //relateの書き込み終了
 
 
-    IDA problem(relate,width,height,s_rate,c_rate);
+        Beam problem(relate, width, height, s_rate, c_rate);
 
-    int val=0;
-    for (i = 0; i < width * height; i++) {
-        val+=problem.piece_val(i, board.at(i));
-    }
-    int cost = s_rate;
-    int limit = s_rate + val / 2;
-    int n_select;
-    queue<int> moved;//駒の操作を管理するqueue
 
-    int rate_gcd = gcd(s_rate, c_rate);
 
-    while (gCount==0&&limit<200) {
+        int val = 0;
         for (i = 0; i < width * height; i++) {
-            if (problem.piece_val(i,board.at(i)) != 0) {
-                n_select = i;
-                moved.push(i + 1000);
-                problem.id_search(board,moved,limit,cost,selectable,n_select,val,i+1000);
-                while (moved.empty()== false) moved.pop();
-            }
-            board = board_copy;
+            val += problem.piece_val(i, board.at(i));
         }
-        limit += rate_gcd;
-    }
-}
+        //cout << "val=" << val << endl;
+        int cost = 0;
+        queue<int> moved;//駒の操作を管理するqueue
 
-int gcd(int a, int b)
-{
-    if (a % b == 0)
-    {
-        return(b);
-    }
-    else
-    {
-        return(gcd(b, a % b));
-    }
+        problem.predata[0].moved = moved;
+        problem.predata[0].board = board;
+        problem.predata[0].cost = 0;
+        problem.predata[0].val = val;
+        problem.predata[0].selectable = selectable;
+        problem.predata[0].n_select = -1;
+        problem.predata[0].recent = -1;
+
+
+        problem.be_search(board, moved, cost, selectable, -1, -1, val, 0);
+
+
+
+        int node_count;
+        int depth = 0;
+
+        while (gCount == 0) {
+            int dir, sel, root, c;
+            node_count = 0;
+            for (auto itr = node.begin(); itr != node.end(); ++itr) {
+                root = itr->second.second;  //  遷移元の指定
+                if (itr->second.first >= 1000 || depth == 0) {      //選択+交換操作
+                    dir = itr->second.first % 1000;
+                    sel = itr->second.first;
+
+
+                    sel -= dir;
+                    sel = (sel / 1000) - 1;
+
+
+                    c = relate.at(sel).at(dir);
+                    problem.nextdata[node_count].moved = problem.predata[root].moved;
+                    problem.nextdata[node_count].moved.push(sel + 1000);
+                    problem.nextdata[node_count].moved.push(dir);
+                    swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
+                    problem.nextdata[node_count].board = problem.predata[root].board;
+                    swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
+
+                    problem.nextdata[node_count].cost = problem.predata[root].cost + s_rate + c_rate;
+                    problem.nextdata[node_count].val = itr->first;
+                    problem.nextdata[node_count].selectable = problem.predata[root].selectable - 1;
+                    problem.nextdata[node_count].n_select = c;
+                    problem.nextdata[node_count].recent = dir;
+                }
+                else {                                          //交換操作
+                    dir = itr->second.first;
+                    sel = problem.predata[root].n_select;
+
+                    c = relate.at(sel).at(dir);
+                    problem.nextdata[node_count].moved = problem.predata[root].moved;
+                    problem.nextdata[node_count].moved.push(dir);
+                    swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));
+                    problem.nextdata[node_count].board = problem.predata[root].board;
+                    swap(problem.predata[root].board.at(sel), problem.predata[root].board.at(c));   //戻す
+
+                    problem.nextdata[node_count].cost = problem.predata[root].cost + c_rate;
+                    problem.nextdata[node_count].val = itr->first;
+                    problem.nextdata[node_count].selectable = problem.predata[root].selectable;
+                    problem.nextdata[node_count].n_select = c;
+                    problem.nextdata[node_count].recent = dir;
+                }
+                node_count++;
+                if (node_count == be_size) break;
+            }
+            depth++;
+
+            for (i = 0; i < node_count; i++) {
+                problem.predata[i] = problem.nextdata[i];
+            }
+
+            for (i = 0; i < node_count; i++) {
+                if (gCount == 0 && problem.predata[i].val == 0) {
+                    problem.be_finished(problem.predata[i].moved);
+                    gCount++;
+                    break;
+                }
+                problem.be_search(problem.predata[i].board, problem.predata[i].moved, problem.predata[i].cost, problem.predata[i].selectable, problem.predata[i].n_select, problem.predata[i].recent, problem.predata[i].val, i);
+            }
+        }
+        outputdata();
+        //cout <<"depth="<< depth<<endl;
+        //clock_t end = clock();
+        //cout << "time=" << ((double)end - start) / 1000 << endl;
+
+        cout<<"sorted puzzle"<<endl;
+
 }

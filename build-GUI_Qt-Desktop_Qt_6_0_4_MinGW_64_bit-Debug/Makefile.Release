@@ -561,6 +561,12 @@ release/mainwindow.o: ../GUI_Qt/mainwindow.cpp ../../Qt/6.0.4/mingw81_64/include
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qlabel.h \
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qframe.h \
 		../../Qt/6.0.4/mingw81_64/include/QtGui/qpicture.h \
+		../../Qt/6.0.4/mingw81_64/include/QtWidgets/QLineEdit \
+		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qlineedit.h \
+		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextcursor.h \
+		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextformat.h \
+		../../Qt/6.0.4/mingw81_64/include/QtGui/qpen.h \
+		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextoption.h \
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/QMenuBar \
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qmenubar.h \
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qmenu.h \
@@ -575,10 +581,6 @@ release/mainwindow.o: ../GUI_Qt/mainwindow.cpp ../../Qt/6.0.4/mingw81_64/include
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qtextedit.h \
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/qabstractscrollarea.h \
 		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextdocument.h \
-		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextoption.h \
-		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextcursor.h \
-		../../Qt/6.0.4/mingw81_64/include/QtGui/qtextformat.h \
-		../../Qt/6.0.4/mingw81_64/include/QtGui/qpen.h \
 		../../Qt/6.0.4/mingw81_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\mainwindow.o ..\GUI_Qt\mainwindow.cpp
 
