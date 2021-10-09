@@ -157,7 +157,8 @@ struct Beam {
         int ny = np / width;
         int val = min(abs(nx - cx), width - abs(nx - cx)) + min(abs(ny - cy), height - abs(ny - cy));
         int poswei = abs(((int)width / 2) - cx) + (((int)height / 2) - cy);
-        return (val+val*val)*c_rate;
+        if (np == cp) poswei = 0;
+        return (val+val*val*2+poswei)*c_rate;
     }
     Beam(vector<vector<int>> rel, int w, int h, int sr, int cr) {
         relate = rel;
