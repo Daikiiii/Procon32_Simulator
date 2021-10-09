@@ -2,19 +2,16 @@ import numpy as np
 import codecs
 from PIL import Image
 #回転情報だけあっているダミーの情報
-def make_solution(save_path,Place_mat,Rotmat,puzzle_inf):
+def make_solution(save_path,Place_mat,rot_mat,puzzle_inf):
     width,height=puzzle_inf[:2]
     solution=[str(format(j,'x'))+str(format(i,'x')) for i in range(height)  for j in range(width)]
     solution=np.reshape(solution,(height,width))
-
-    rot_mat=np.zeros((height,width),dtype=np.int32)
 
     for i in range(height):
         for j in range(width):
             piece1=Place_mat[i,j]//width
             piece2=Place_mat[i,j]%width
             solution[piece1,piece2]=str(format(j,'x'))+str(format(i,'x'))
-            rot_mat[piece1,piece2]=Rotmat[i,j]
     
     text_file=open(save_path+"puzzle_solution.txt","wt")
     text_file.write(str(width)+" "+str(height)+"\n")
